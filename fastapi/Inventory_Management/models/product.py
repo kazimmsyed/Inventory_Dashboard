@@ -1,6 +1,31 @@
 import random
 import uuid
 from typing import Optional
+from pydantic import BaseModel, Field
+
+#API GATEWAY VALIDATION
+class ProductRequest(BaseModel):
+    id:Optional[uuid.UUID] = None
+    product_name: str = Field(min_length=5, max_length=50)
+    supplier_id: Optional[int] = None
+    unit_price: float = Field(gt=0)
+    units_in_stock: int = Field(ge=1)
+    units_on_order: Optional[int] = Field(default=0,ge=0)
+    reorder_level: Optional[int] = Field(default=0,ge=0)
+    discontinued: Optional[int] = Field(default=0)
+    category_id: Optional[int] = None
+    quantity_per_unit: Optional[str] = Field(default="",min_length=0)
+
+    model_config = {
+        "json_schema_extra":{
+            "example":{
+                "product_name":"SuperDry",
+                "unit_price":1.0,
+                "units_in_stock":1,
+            }
+        }
+    }
+
 
 class Product:
     def __init__(self):

@@ -1,9 +1,12 @@
 
 from fastapi import Body, FastAPI
 from fastapi import HTTPException
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from starlette import status
+
 app = FastAPI()
 from models.product import Product
+from models.product import ProductRequest
 
 #key is product_id
 #fields: name, category, price, Quantity, Stock
@@ -76,15 +79,12 @@ NAME_TO_ID = {
     "legacy usb hub": 3
 }
 
-
-
-
 @app.get("/products")
 async def get_products():
     return PRODUCTS
 
 @app.get("/products/{product_name}")
-async def get_product_info(product_name: str) -> Dict[str,Any]:
+async def get_product_info(product_name: str,status_code=status.HTTP_200_OK) -> Dict[str,Any]:
     try:
         product_id= NAME_TO_ID.get(product_name.casefold())
         return await get_product(product_id)
@@ -95,11 +95,11 @@ async def get_product_info(product_name: str) -> Dict[str,Any]:
 
 
 @app.get("/products/{product_id}")
-async def get_product(product_id: int) -> Dict[str,Any]:
+async def get_product(product_id: int, status_code=status.HTTP_200_OK) -> Dict[str,Any]:
     return PRODUCTS.get(product_id)
 
 @app.get("/products/filter/{product_name}")
-async def get_product_by_pricerange(product_name: str,max_price:float) -> Dict[str,Any]:
+async def get_product_by_pricerange(product_name: str,max_price:float, status_code=status.HTTP_200_OK) -> Dict[str,Any]:
     for p in PRODUCTS.values():
         if p.get("product_name").casefold() == product_name.casefold() and p.get("unit_price") <= max_price:
             return p
@@ -107,13 +107,29 @@ async def get_product_by_pricerange(product_name: str,max_price:float) -> Dict[s
     return {"message": "No product within the range"}
 
 
+# @app.post("/products/post/new")
+# async def new_product(payload=Body()):
+#     try:
+#         new_product= (Product.ProductBuilder()
+#              .set_name(payload.get("product_name"))
+#              .set_price(payload.get("unit_price"))
+#              .set_stock(payload.get("units_in_stock")).build())
+#         return {"message" : new_product}
+#
+#     except ValueError as e:
+#         raise HTTPException(status_code=400, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e)) #for generic server errors
+
 @app.post("/products/post/new")
-async def new_product(payload=Body()):
+async def new_product(payload:ProductRequest, status_code=status.HTTP_201_CREATED) -> Dict[str,Any]:
     try:
+        print("payload: ", payload)
+        payload = payload.model_dump()
         new_product= (Product.ProductBuilder()
-             .set_name(payload.get("product_name"))
-             .set_price(payload.get("unit_price"))
-             .set_stock(payload.get("units_in_stock")).build())
+             .set_name(payload["product_name"])
+             .set_price(payload["unit_price"])
+             .set_stock(payload["units_in_stock"]).build())
         return {"message" : new_product}
 
     except ValueError as e:
