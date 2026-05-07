@@ -30,7 +30,7 @@ class Products(base):
 
     quantity_per_unit = Column(SmallInteger, nullable=False, default=0)
     unit_price = Column(DECIMAL(3, 2), nullable=True,default=0)#Float
-    unit_in_stock = Column(SmallInteger, nullable=True,default=0)
+    unit_in_stock = Column(SmallInteger, nullable=True,default=0)#its plural.
     unit_on_order = Column(SmallInteger, nullable=True,default=0)
     #even though there is default, null can be passed.
     reorder_level = Column(SmallInteger, nullable=True,default=0)
