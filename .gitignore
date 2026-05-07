@@ -1,3 +1,4 @@
+.idea/
 .DS_Store
 fastapi/.DS_Store
 fastapi/.idea/
@@ -7,6 +8,7 @@ fastapi/fastapienv/*
 fastapi/fastapienv/
 fastapi/fastapienv/.DS_Store
 fastapi/fastapienv/bin/
+fastapi/Inventory_Management/inventory_management.db
 
 
 

@@ -1,87 +1,49 @@
 
-from fastapi import Body, FastAPI
+from fastapi import FastAPI, Depends
 from fastapi import HTTPException
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Annotated
 from starlette import status
+from sqlalchemy.orm import Session
+from database import engine, SessionLocal
+
+
+#Local imports
+from models import Inventory
+from seed.dummy import NAME_TO_ID
+from seed.dummy import PRODUCTS
+from schemas.product import Product
+from schemas.product import ProductRequest
+
+Inventory.base.metadata.create_all(bind=engine);
 
 app = FastAPI()
-from models.product import Product
-from models.product import ProductRequest
 
-#key is product_id
-#fields: name, category, price, Quantity, Stock
-#category is category_id to prevent insertion anomaly and Data duplication
-#extra fields:
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close();
+
+
+
 """
-Field             | Type          | Null | Key | Default | Extra          |
-+-------------------+---------------+------+-----+---------+----------------+
-| product_id        | smallint      | NO   | PRI | NULL    | auto_increment |
-| product_name      | varchar(40)   | NO   |     | NULL    |                |
-| supplier_id       | smallint      | YES  | MUL | NULL    |                |
-| category_id       | smallint      | YES  | MUL | NULL    |                |
-| quantity_per_unit | varchar(20)   | YES  |     | NULL    |                |
-| unit_price        | decimal(10,2) | YES  |     | NULL    |                |
-| units_in_stock    | smallint      | YES  |     | NULL    |                |
-| units_on_order    | smallint      | YES  |     | NULL    |                |
-| reorder_level     | smallint      | YES  |     | NULL    |                |
-| discontinued      | tinyint(1)    | NO   |     | 0       |                |
+dependency injection instead of method establishing a conn, open and closing.
+we inject the sql conn. This make them loosely coupled. We can even
+have mock database to test things. 
+Essence: Don't call us, we will call you.
 """
 
 
+# @app.get("/products")
+# async def get_products():
+#     return PRODUCTS
+
+@app.get("/")
+async def get_products(db: Annotated[Session,Depends(get_db)]):
+    return db.query(Inventory.Products).all()
 
 
-
-
-
-
-# Initial seed data following your SQL schema
-# I used dictionary for O(1) retrieval.
-PRODUCTS = {
-    1: {
-        "product_name": "Wireless Mouse",
-        "supplier_id": 101,
-        "category_id": 5,
-        "quantity_per_unit": "1 piece",
-        "unit_price": 25.99,
-        "units_in_stock": 150,
-        "units_on_order": 0,
-        "reorder_level": 20,
-        "discontinued": 0
-    },
-    2: {
-        "product_name": "Mechanical Keyboard",
-        "supplier_id": 101,
-        "category_id": 5,
-        "quantity_per_unit": "1 piece",
-        "unit_price": 89.50,
-        "units_in_stock": 45,
-        "units_on_order": 20,
-        "reorder_level": 10,
-        "discontinued": 0
-    },
-    3: {
-        "product_name": "Legacy USB Hub",
-        "supplier_id": 105,
-        "category_id": 2,
-        "quantity_per_unit": "1 piece",
-        "unit_price": 15.00,
-        "units_in_stock": 0,
-        "units_on_order": 0,
-        "reorder_level": 5,
-        "discontinued": 1
-    }
-}
-
-# Secondary Index (The "Shortcut")
-NAME_TO_ID = {
-    "wireless mouse": 1,
-    "mechanical keyboard": 2,
-    "legacy usb hub": 3
-}
-
-@app.get("/products")
-async def get_products():
-    return PRODUCTS
 
 @app.get("/products/{product_name}")
 async def get_product_info(product_name: str,status_code=status.HTTP_200_OK) -> Dict[str,Any]:

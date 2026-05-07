@@ -5,14 +5,14 @@ from pydantic import BaseModel, Field
 
 #API GATEWAY VALIDATION
 class ProductRequest(BaseModel):
-    id:Optional[uuid.UUID] = None
-    product_name: str = Field(min_length=5, max_length=50)
+    product_id:Optional[uuid.UUID] = None #auto-generated
+    product_name: str = Field(min_length=5, max_length=50) #mandatory
     supplier_id: Optional[int] = None
-    unit_price: float = Field(gt=0)
-    units_in_stock: int = Field(ge=1)
+    unit_price: float = Field(gt=0)#price > 0
+    units_in_stock: int = Field(ge=0)
     units_on_order: Optional[int] = Field(default=0,ge=0)
     reorder_level: Optional[int] = Field(default=0,ge=0)
-    discontinued: Optional[int] = Field(default=0)
+    discontinued: Optional[int] = Field(default=0) #mandatory
     category_id: Optional[int] = None
     quantity_per_unit: Optional[str] = Field(default="",min_length=0)
 
@@ -61,6 +61,8 @@ class Product:
             self.product.unit_price = price
             return self
 
+        def set_discontinued(self, discontinued: int):
+            self.product.discontinued = discontinued
 
         def set_stock(self, stock: int):
             self.product.units_in_stock = stock
