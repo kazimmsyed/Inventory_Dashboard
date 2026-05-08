@@ -35,6 +35,7 @@ class Products(base):
     #even though there is default, null can be passed.
     reorder_level = Column(SmallInteger, nullable=True,default=0)
     discontinued = Column(SmallInteger, nullable=False, default=0)  # mandatory
+    owner_id = Column(Integer, ForeignKey('users.user_id'), nullable=True)
 
 class Suppliers(base):
     __tablename__ = "suppliers"
@@ -52,9 +53,22 @@ class Suppliers(base):
     homepage = Column(String(50), nullable=True)
 
 
+
 class Categories(base):
     __tablename__ = "categories"
     category_id = Column(Integer, primary_key=True, autoincrement=True,index=True,nullable=False)
     category_name = Column(String(15), nullable=False)
     description = Column(String(50), nullable=True)
     picture=Column(String(50), nullable=True)
+
+
+class User(base):
+    __tablename__ = "users"
+    user_id = Column(Integer, primary_key=True, autoincrement=True,index=True,nullable=False)
+    email = Column(String(30), nullable=False, unique=True)
+    username = Column(String(20), nullable=False)
+    last_name = Column(String(30), nullable=False)
+    first_name = Column(String(30), nullable=False)
+    hashed_password = Column(String(100), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True)
+    role=Column(String(15), nullable=True)

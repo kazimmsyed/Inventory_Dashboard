@@ -69,10 +69,14 @@ class ProductBuilder:
     def set_discontinued(self, discontinued: int):
         self.product.discontinued = discontinued
         return self
+
     def set_stock(self, stock: int):
         self.product.units_in_stock = stock
         return self
 
+    def set_owner_id(self, user_id: int=None):
+        self.product.owner_id = user_id
+        return self
 
     def build(self):
         # better than is None Since it checks for Empty String as well.
