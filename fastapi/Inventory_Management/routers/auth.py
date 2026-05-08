@@ -2,7 +2,7 @@
 from datetime import timedelta, datetime, timezone
 
 from cryptography.hazmat.decrepit.ciphers import algorithms
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException,Request
 from typing import List, Dict, Any, Annotated
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer # to have secure forms on Swagger
 from jose import jwt,JWTError
-
+from fastapi.templating import Jinja2Templates
 #local imports
 from models import Inventory
 from schemas.User import UserRequest,Token
@@ -41,7 +41,19 @@ def get_db():
         db.close();
 
 db_dependency=Annotated[Session,Depends(get_db)]
+templates=Jinja2Templates(directory="templates")
+###PAGES###
 
+@router.get("/login")
+def render_login_page(request:Request):
+    return templates.TemplateResponse("login.html",{"request":request})
+
+@router.get("/register")
+def render_login_page(request:Request):
+    return templates.TemplateResponse("register.html",{"request":request})
+
+
+###Endpoints###
 @router.post("/",status_code=status.HTTP_201_CREATED)
 async def create_user(db:db_dependency,create_user:UserRequest):
     user = UserBuilder().set_name(create_user.first_name,create_user.last_name) \

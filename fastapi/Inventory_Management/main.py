@@ -1,24 +1,34 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
+from starlette.responses import HTMLResponse
+
 # from fastapi import HTTPException,Path
 # from typing import List, Dict, Any, Annotated
 # from starlette import status
 # from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 from sqlalchemy import func
-
+from fastapi.templating import Jinja2Templates
 #Local imports
 from models import Inventory
+from fastapi.staticfiles import StaticFiles
 # from seed.dummy import NAME_TO_ID
 # from seed.dummy import PRODUCTS
 # from schemas.product import ProductBuilder
 # from schemas.product import ProductRequest
 from routers import auth,Inventory_Management
 
-Inventory.base.metadata.create_all(bind=engine);
 app = FastAPI()
+Inventory.base.metadata.create_all(bind=engine);
+
 app.include_router(auth.router)
 app.include_router(Inventory_Management.router)
+
+templates=Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+@app.get("/")
+def test(request:Request):
+    return templates.TemplateResponse("home.html",{"request":request})
 
 # def get_db():
 #     db = SessionLocal()

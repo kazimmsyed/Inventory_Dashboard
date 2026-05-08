@@ -20,7 +20,10 @@ from routers.auth import get_curr_user
 
 # router.include_router(auth.router)
 # Inventory.base.metadata.create_all(bind=engine);
-router = APIRouter()
+router = APIRouter(
+    prefix="/inventory",
+    tags=["inventory"]
+)
 
 
 
@@ -48,8 +51,10 @@ db_dependency=Annotated[Session,Depends(get_db)]
 user_dependency = Annotated[dict,Depends(get_curr_user)]
 
 
-@router.get("/")
-async def get_products(db: db_dependency):
+@router.get("/products")
+async def get_products(user:user_dependency,db: db_dependency):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication Failed")
     return db.query(Inventory.Products).all()
 
 
@@ -65,6 +70,8 @@ async def get_products(db: db_dependency):
 
 @router.get("/products/id/{product_id}",status_code=status.HTTP_200_OK)
 async def get_product(user:user_dependency, db: db_dependency,product_id: int):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication Failed")
     try:
         #always use first or all at the end of query.
         data=db.query(Inventory.Products).filter(Inventory.Products.product_id == product_id).first()
@@ -75,7 +82,9 @@ async def get_product(user:user_dependency, db: db_dependency,product_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/products/{product_name}",status_code=status.HTTP_200_OK)
-async def get_product_info(product_name: str,db:db_dependency):
+async def get_product_info(user:user_dependency,product_name: str,db:db_dependency):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication Failed")
     try:
         data=db.query(Inventory.Products).filter(
                     func.lower((Inventory.Products.product_name))
@@ -132,11 +141,10 @@ async def get_product_by_pricerange(product_name: str,max_price:float, status_co
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e)) #for generic server errors
 
-@router.post("/products/post/new", status_code=status.HTTP_201_CREATED)
+@router.post("/products/new", status_code=status.HTTP_201_CREATED)
 async def new_product(user:user_dependency,payload:ProductRequest,db:db_dependency):
     # data= payload.model_dump()
     #if not user -> returns true when its an empty list or string or None.
-
     #if not user vs if user is None
     #latter is just a referrence check  since None is singleton
     #former also check for empty ds or None.
