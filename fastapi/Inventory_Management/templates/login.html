@@ -5,124 +5,194 @@
     <title>Northwind</title>
     <link type="text/css" rel="stylesheet" href="{{url_for('static',path='/css/base.css') }}" \>
     <link type="text/css" rel="stylesheet" href="{{url_for('static',path='/css_k/bootstrap.css') }}" \>
-    <script src="/js_k/bootstrap.bundle.js"></script>
+    <script src="{{url_for('static',path='/js_k/bootstrap.bundle.js') }}"></script>
+    <script src="{{url_for('static',path='/js/login.js') }}" defer></script>
     <style>
-        #login_sec{
-            margin-top:3rem;
-        }
-
-        #login_main_div{
-            border:0px solid wheat;
-
-            height:100%;
-            display: flex;
-            z-index: -2;
-            justify-content: center;
-            position: relative;
-        }
-
-        #login_main_div::before{
-            content:"";
-            border:1rem solid gold;
-            z-index:-1;
-            top:15%;
-            left:15%;
-            width: 50%;
-            height: 100%;
-            position: absolute;
+        .draw-border{
+            border:0px solid black;
 
         }
-
-        #login_main_div::after{
-            content:"";
-            background-color: gold;
-            z-index:-1;
-            top:-15%;
-            right:95%;
-            width: 10%;
-            height: 50%;
-            position: absolute;
+        #login_page{
+            display: grid;
+            column-gap:1.5rem;
+            row-gap: 1rem;
+            grid-template-columns: repeat(3,1fr) repeat(2,1fr);
+            grid-template-areas:
+                        "lp lp lp rp rp"
+                            "bp bp bp bp bp";
         }
+        #leftportion{
+            grid-area:lp;
+            /*grid-column: 1/5*/
+            /*grid-column: span 3;*/
+            /*grid-column-start: ; */
+            /* grid-row-start:span 2 or grid-row-end or grid-row: 1 / span 2
 
-
-        #login_main_div img{
-
-            height:100%;
-            width: 60%;
-
-        }
-
-        #login_form{
-            padding-top:1rem;
-
-        }
-        #login_form div{
-            padding-top:0.8rem;
-
-        }
-        #login_company_div{
-            border:0px solid grey;
+             */
             display: flex;
             flex-direction: row;
-            justify-content: center;
+            position: relative;
+        }
+        #leftportion::before{
+            content:"The Northwind database is an excellent tutorial schema for a small-business ERP, with customers, orders, inventory, purchasing, suppliers, shipping, employees, and single-entry accounting";
+            position:absolute;
+            height:20%;
+            width: 50%;
+            background-color: transparent;
+            backdrop-filter: blur(5px);
+            font-family:cursive;
+
+            font-size: large;
+            color:white;
+            z-index: 2;
+            top:10%;
+            left:30%;
+            animation: float 5s ease-in-out;
+        }
+
+        @keyframes float {
+    0% { transform: translateY(0px);transform: scale(0)}
+    25%{ transform: translateY(-12px);transform:scale(0.7)}
+    50% { transform: translateY(-5px); }
+    75% { transform: translateY(12px); }
+    100% { transform: translateY(-10px);transform: scale(1) }
+}
+
+        @keyframes movingImage{
+            0% {background-position: 25% 75%}
+            50%{background-position: 45% 45%}
+            100%{background-position: top right}
+        }
+
+
+        #leftportion div{
+            width: 50%;
+            height: 100%;
+            background-size: cover;
+        }
+        #leftportion div{
+            animation: movingImage 5s infinite;
 
         }
-        #login_company_div img{
-            width:50%;
-            height:20%;
+
+        #leftportion div:nth-of-type(1){
+            background-image: url("../static/images/cargo_moon.jpg");
+
         }
+
+        #leftportion div:nth-of-type(2){
+            background-image: url("../static/images/cargo_eagle_eye.jpg");
+        }
+
+
+        #rightportion{
+            grid-area:rp;
+            position: relative;
+            padding:1rem;
+        }
+
+        #rightportion img{
+            width:100%;
+            max-width:400px;
+            height: 100%;
+        }
+
+        #moving_text{
+            width:60vw;
+            color:black;
+            font-family:SansSerif;
+            margin:auto;
+            padding: 1rem;
+        }
+
+        #bottomportion{
+            grid-area:bp;
+            height:10vh;
+        }
+
+        .text-fade {
+        animation: elevator_out 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+    @keyframes elevator_out {
+        0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.3;
+        }
+        /*40% {*/
+        /*transform: translateY(-10px) scale(0.95);*/
+        /*opacity: 0.2;*/
+        /*}*/
+
+
+        100% {
+        transform: translateY(-30px) scale(0.8);
+        opacity: 0;
+        }
+}
+
+        @media(max-width:800px){
+            #login_page{
+            background-color: transparent;
+            display: grid;
+            grid-template-areas:" lp lp lp lp lp"
+                 "rp rp rp rp rp" "bp bp bp bp bp";
+            column-gap:1.5rem;
+            row-gap: 1em;
+             }
+
+            #leftportion{
+                height:40vh
+            }
+
+            #rightportion{
+                margin:1rem;
+            }
+        }
+
     </style>
 </head>
 <body>
+    <section id="login_page">
+        <div id="leftportion" class=" draw-border">
+            <div></div>
+            <div></div>
 
-<section class="container" style="height:80vh;border:0px solid black" id="login_sec">
-    <div class="row" >
-        <div class="col">
 
-            <div id="login_main_div">
-                <img src="https://plus.unsplash.com/premium_photo-1661879449050-069f67e200bd?q=80&w=1644&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="cargo_overseas">
 
+        </div>
+        <div id="rightportion" class="draw-border">
+            <div id="login_company_div" class="d-flex justify-content-center">
+                <img src="{{url_for('static',path='/images/northwind.png') }}">
+          </div>
+            <form>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1">
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <br>
+            <a href="/auth/register">Create an Account, Register!</a>
+
+        </div>
+        <div id="bottomportion" class="draw-border">
+            <div id="moving_text" class=" draw-border">
+                Examples and usage guidelines for form control styles, layout options, and custom components for creating a wide variety of forms.
             </div>
-
         </div>
-        <div class="col-4" style="border:0px solid black">
-                <form id="login_form" style="border:0px solid green; height:60vh">
-                    <div class="mb-3">
-                        <div id="login_company_div">
-                            <img src="{{url_for('static',path='/images/northwind.png') }}">
-                        </div>
-
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1">
-                    </div>
-                    <a href="/auth/register">Create an Account, Register?</a>
-                    <br><br>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-
-                </form>
+        <div></div>
+    </section>
 
 
-        </div>
-
-    </div>
-
-
-</section>
-    <figure class="text-center">
-  <blockquote class="blockquote">
-    <p>The Northwind database contains the sales data for a fictitious company called “Northwind Traders</p>
-  </blockquote>
-  <figcaption class="blockquote-footer">
-    Someone famous in <cite title="Source Title">Source Title</cite>
-  </figcaption>
-</figure>
 </body>
 </html>
