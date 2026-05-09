@@ -1,0 +1,18 @@
+#register_sec{
+        width: 40%;
+        margin:auto;
+        border:0px solid black;
+}
+#login_company_div img{
+    width:50%;
+    height:30%;
+}
+
+
+@media(max-width:600px){
+    #register_sec{
+        width:80%;
+        border:0px solid black;
+    }
+
+}

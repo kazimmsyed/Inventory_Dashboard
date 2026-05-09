@@ -7,15 +7,18 @@
     <link type="text/css" rel="stylesheet" href="{{url_for('static',path='/css_k/bootstrap.css') }}" \>
     <script src="{{url_for('static',path='/js_k/bootstrap.bundle.js') }}"></script>
   {% block style_block %}
-  {% endblock}
 
-  {% block js_block%}
   {% endblock %}
+
+
 </head>
 <body>
   {% block content %}
 
   {% endblock %}
 
+
+{% block js_block %}
+  {% endblock %}
 </body>
 </html>

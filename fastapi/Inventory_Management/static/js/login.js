@@ -1,4 +1,3 @@
-console.log("login js connected");
 
 const bottom_text = [
     "The Northwind database is a classic, foundational sample database originally created by Microsoft.",
@@ -16,12 +15,16 @@ const updateText = () => {
     moving_text_div.classList.add("text-fade");
 
     setTimeout(() => {
-
         const randomIndex = Math.floor(Math.random() * bottom_text.length);
         moving_text_div.innerText = bottom_text[randomIndex];
-
         moving_text_div.classList.remove("text-fade");
-    }, 2000);
+    }, 2000); //So this should be longer than the time in animation
 };
 
 setInterval(updateText, 5000);
+
+
+
+
+
+

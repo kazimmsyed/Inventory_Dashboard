@@ -1,3 +1,4 @@
+from email import message
 
 from fastapi import Depends, APIRouter
 from fastapi import HTTPException,Path
@@ -284,4 +285,12 @@ async def delete_product(user:user_dependency,db:db_dependency,product_id: int =
     db.delete(deleted_product)
     db.commit()
     return {"message":f" Successfully deleted product {product_name} "}
+
+
+
+
+
+
+
+
 

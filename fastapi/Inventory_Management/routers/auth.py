@@ -2,7 +2,7 @@
 from datetime import timedelta, datetime, timezone
 
 from cryptography.hazmat.decrepit.ciphers import algorithms
-from fastapi import Depends, APIRouter, HTTPException,Request
+from fastapi import Depends, APIRouter, HTTPException, Request, Path
 from typing import List, Dict, Any, Annotated
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -112,3 +112,15 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
     token=create_access_token(user.username, user.user_id,timedelta(minutes=10))
     return {'access_token':token,'token_type':'bearer'}
+
+@router.get("/user/{username}",status_code=status.HTTP_200_OK)
+async def get_user(db:db_dependency,username:str=Path(min_length=4)):
+    #use exists() over first(), it doesnt load the whole object
+    user_exists=db.query(Inventory.User).filter(Inventory.User.username == username).exists()
+    #above is just a sql stmt prepartion.
+    if db.query(user_exists).scalar():
+        # A user with that username already exist
+        #Technically correct, but interferes with Network tab.
+        #raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Authentication Failed")
+        return {"available":False,"message":"Username is taken"}
+    return {"available":True,"message":"Username is available"}

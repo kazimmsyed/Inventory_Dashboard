@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css_k/bootstrap.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
-  <script src="{{ url_for('static', path='js_k/bootstrap.bundle.js') }}" defer></script>
-  <style>
-      #register_sec{
-        width: 40%;
-        margin:auto;
-        border:0px solid black;
-      }
-      #login_company_div img{
-            width:50%;
-            height:20%;
-        }
-  </style>
-</head>
-<body>
+{% extends "partials/layout.html" %}
+{% block style_block %}
+<link type="text/css" rel="stylesheet" href="{{url_for('static',path='/css/register.css') }}" \>
+<style>
+    draw-border{
+        border:1px solid black;
+    }
+}
+</style>
 
+{% endblock %}
+
+
+
+
+{% block content %}
   <section id="register_sec">
-    <form class="row g-3">
+    <form id='register_form' class="row g-3">
       <div class="col-12 " >
         <div id="login_company_div" class="d-flex justify-content-center">
         <img src="{{url_for('static',path='/images/northwind.png') }}">
@@ -30,19 +24,19 @@
 
 
       <div class="col-md-6">
-    <label for="validationDefault01" class="form-label">First name</label>
-    <input type="text" class="form-control" id="validationDefault01" value="Mark" required>
+    <label for="first_name" class="form-label">First name</label>
+    <input type="text" class="form-control" id="first_name" value="River" required>
     </div>
     <div class="col-md-6">
-    <label for="validationDefault02" class="form-label">Last name</label>
-    <input type="text" class="form-control" id="validationDefault02" value="Otto" required>
+    <label for="last_name" class="form-label">Last name</label>
+    <input type="text" class="form-control" id="last_name" value="Wind" required>
     </div>
 
-    <div class="col-12">
+    <div class="col-md-12">
     <label for="validationServerUsername" class="form-label">Username</label>
     <div class="input-group has-validation">
       <span class="input-group-text" id="inputGroupPrepend3">@</span>
-      <input type="text" class="form-control is-invalid" id="validationServerUsername" aria-describedby="inputGroupPrepend3 validationServerUsernameFeedback" required>
+      <input type="text" class="form-control is-invalid" value="sahil" id="validationServerUsername" aria-describedby="inputGroupPrepend3 validationServerUsernameFeedback" required>
       <div id="validationServerUsernameFeedback" class="invalid-feedback">
         Please choose a username.
       </div>
@@ -51,13 +45,23 @@
 
       <div class="col-12">
           <label for="exampleInputEmail1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+          value="sahilsyed@gmail.com"
+          >
           <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
       </div>
 
       <div class="col-12">
           <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
+          <input type="password"  class="form-control" id="exampleInputPassword1" value="sahil123">
+      </div>
+
+        <div class="col-12">
+          <label for="exampleInputPassword2" class="form-label">Confirm Password</label>
+          <input type="password" class="form-control" id="exampleInputPassword2" value="sahil123">
+            <div id="password_not_matched2" class="invalid-feedback">
+           Passwords do not match
+        </div>
       </div>
 
      <div>
@@ -80,5 +84,11 @@
 
 
   </section>
-</body>
-</html>
+
+{% endblock %}
+
+{% block js_block %}
+<script src="{{url_for('static',path='js/registeration.js') }}"  defer></script>
+<script src="{{url_for('static',path='js/register_validation.js') }}" defer></script>
+
+{% endblock %}
