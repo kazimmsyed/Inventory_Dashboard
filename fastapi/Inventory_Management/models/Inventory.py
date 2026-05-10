@@ -37,6 +37,7 @@ class Products(base):
     discontinued = Column(SmallInteger, nullable=False, default=0)  # mandatory
     owner_id = Column(Integer, ForeignKey('users.user_id'), nullable=True)
 
+
 class Suppliers(base):
     __tablename__ = "suppliers"
     supplier_id = Column(Integer, primary_key=True, autoincrement=True,index=True,nullable=False)

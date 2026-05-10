@@ -1,0 +1,15 @@
+{% extends "partials/layout.html" %}
+
+{% block style_block %}
+{% endblock %}
+
+
+{% block content %}
+{% endblock %}
+
+{% block js_block %}
+<script>
+    alert("hello");
+</script>
+<script src="{{url_for('static',path='js/product.js') }}" defer></script>
+{% endblock %}

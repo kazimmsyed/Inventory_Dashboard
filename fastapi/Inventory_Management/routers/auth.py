@@ -23,7 +23,7 @@ router = APIRouter(
     prefix="/auth",
     tags=["auth"]
 )
-#doesnt show in docs#, technically a different fastapi application
+#doesn't show in docs#, technically a different fastapi application
 SECRET_KEY="c7a4a67b2f1b2e1d755f2b4ce07cb980fb784970e8d322b71d3ca65c9043479b"
 ALGORITHM="HS256"
 bycrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#hashing algo
@@ -110,7 +110,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     user = authenticate_user(db,form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
-    token=create_access_token(user.username, user.user_id,timedelta(minutes=10))
+    token=create_access_token(user.username, user.user_id,timedelta(minutes=60))
     return {'access_token':token,'token_type':'bearer'}
 
 @router.get("/user/{username}",status_code=status.HTTP_200_OK)

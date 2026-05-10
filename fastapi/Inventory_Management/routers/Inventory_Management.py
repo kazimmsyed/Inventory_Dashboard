@@ -1,10 +1,11 @@
 from email import message
 
 from fastapi import Depends, APIRouter
-from fastapi import HTTPException,Path
+from fastapi import HTTPException,Path,Request
 from typing import List, Dict, Any, Annotated
 
 from jose import JWTError
+from sqlalchemy.ext.asyncio import result
 from starlette import status
 from sqlalchemy.orm import Session
 from database import SessionLocal
@@ -12,11 +13,16 @@ from sqlalchemy import func
 
 #Local imports
 from models import Inventory
+from models.Inventory import Products
 #from seed.dummy import NAME_TO_ID
 from seed.dummy import PRODUCTS
 from schemas.product import ProductBuilder
 from schemas.product import ProductRequest
 from routers.auth import get_curr_user
+from starlette.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="templates/")
 
 
 # router.include_router(auth.router)
@@ -51,12 +57,70 @@ Essence: Don't call us, we will call you.
 db_dependency=Annotated[Session,Depends(get_db)]
 user_dependency = Annotated[dict,Depends(get_curr_user)]
 
+def redirect_to_login():
+    redirect_response=RedirectResponse(url="/auth/login",status_code=status.HTTP_302_FOUND)
+    redirect_response.delete_cookie(key="access_token")
+    return redirect_response
 
+### Pages ###
+### ENDPOINTS ###
 @router.get("/products")
-async def get_products(user:user_dependency,db: db_dependency):
-    if not user:
-        raise HTTPException(status_code=401, detail="Authentication Failed")
-    return db.query(Inventory.Products).all()
+async def get_products(request:Request,user:user_dependency,db: db_dependency,page: int,size: int):
+    try:
+        result_psc = await fetch_inventory_data(db,page,size);
+        # 2. Manually format into a list of dicts for JSON serialization
+        formatted_data = []
+        for product, supplier, category in result_psc:
+            formatted_data.append({
+                "product": product.product_id,
+                "product_name": product.product_name,
+                "units_in_stock": product.unit_in_stock,
+                "unit_price": product.unit_price,
+                "supplier_name": supplier.company_name,
+                "category_name": category.category_name,
+                "supplier_id": supplier.supplier_id,
+                "category_id": category.category_id,
+                "product_id": product.product_id
+            })
+
+        return {"data": formatted_data}
+    except Exception as e:
+        return {"message":str(e)}
+
+
+@router.get('/products/html')
+async def render_todo_page(request:Request,db:db_dependency,page: int = 1, size: int = 10):
+    try:
+        offset_num = (page - 1) * size
+        helper_fields={"page":page,"size":size}
+
+        user=await get_curr_user(request.cookies.get("access_token") )
+
+        if user is None:
+            return templates.TemplateResponse("page_not_found.html",{"request":request})
+
+        result_psc = await fetch_inventory_data(db,page,size)
+        print("result_psc",result_psc)
+        total = db.query(func.count(Inventory.Products.product_id)).scalar()
+        helper_fields["total_pages"] = total/size
+        return templates.TemplateResponse("products.html",{"request":request,"result_psc":result_psc,"user":user,\
+                                                           "helper_fields":helper_fields})
+    except Exception as e:
+        return {"message":str(e)}
+
+
+async def fetch_inventory_data(db:Session,page:int,size:int=10):
+    page = max(1, page)
+    offset_num = (page - 1) * size
+    result_psc = db.query(Inventory.Products, Inventory.Suppliers, Inventory.Categories) \
+        .join(Inventory.Categories, \
+              Inventory.Products.category_id == Inventory.Categories.category_id) \
+        .join(Inventory.Suppliers, \
+              Inventory.Products.supplier_id == Inventory.Suppliers.supplier_id) \
+        .offset(offset_num).limit(size).all()
+    return result_psc
+
+
 
 
 # @router.get("/products/{product_name}",status_code=status.HTTP_200_OK)
@@ -70,11 +134,12 @@ async def get_products(user:user_dependency,db: db_dependency):
 #         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/products/id/{product_id}",status_code=status.HTTP_200_OK)
-async def get_product(user:user_dependency, db: db_dependency,product_id: int):
+async def get_product(user:user_dependency, db: db_dependency,product_id: int=Path(gt=0)):
     if not user:
         raise HTTPException(status_code=401, detail="Authentication Failed")
     try:
         #always use first or all at the end of query.
+        print("couldn't find it")
         data=db.query(Inventory.Products).filter(Inventory.Products.product_id == product_id).first()
         if not data:
             raise HTTPException(status_code=404, detail="Product not found")
@@ -83,10 +148,11 @@ async def get_product(user:user_dependency, db: db_dependency,product_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/products/{product_name}",status_code=status.HTTP_200_OK)
-async def get_product_info(user:user_dependency,product_name: str,db:db_dependency):
+async def get_product_info(user:user_dependency,db:db_dependency,product_name: str=Path(min_length=2)):
     if not user:
         raise HTTPException(status_code=401, detail="Authentication Failed")
     try:
+        print("couldn't find it")
         data=db.query(Inventory.Products).filter(
                     func.lower((Inventory.Products.product_name))
                                        == product_name.lower()).first()
@@ -104,7 +170,7 @@ async def get_product_info(user:user_dependency,product_name: str,db:db_dependen
 
 
 
-@router.get("/products/filter/{product_name}")
+@router.get("/products/search/{product_name}")
 async def get_product_by_pricerange(product_name: str,max_price:float, status_code=status.HTTP_200_OK) -> Dict[str,Any]:
     for p in PRODUCTS.values():
         if p.get("product_name").casefold() == product_name.casefold() and p.get("unit_price") <= max_price:

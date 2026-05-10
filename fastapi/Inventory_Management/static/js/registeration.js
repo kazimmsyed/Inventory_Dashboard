@@ -35,7 +35,6 @@ if (registerForm) {
             };
 
 
-
             try {
                 const response = await fetch('/auth/', {
                     method: 'POST',
@@ -58,4 +57,5 @@ if (registerForm) {
             }
         });
     }
+
 

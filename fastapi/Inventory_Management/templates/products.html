@@ -1,0 +1,65 @@
+{% include "partials/layout.html" %}
+
+{% block style_block %}
+
+{% endblock %}
+
+
+
+{% block content %}
+<br>
+<span style="display:none" id="page_num_id">{{helper_fields.page}}</span>
+<span style="display:none" id="total_pages">{{helper_fields.total_pages}}</span>
+<span style="display:none" id="page_size">{{helper_fields.size}}</span>
+<table class="table table-dark">
+  <thead>
+    <th>Serial No</th>
+    <th>Product</th>
+    <th>Units in stock</th>
+    <th>Unit price ($)</th>
+    <th>Supplier</th>
+    <th>Category</th>
+    <th>Button</th>
+  </thead>
+  <tbody id="productTableBody">
+  {% for e in result_psc %}
+        <tr class="table-active">
+            <th scope="row">{{ loop.index +  (helper_fields.size*(helper_fields.page-1)) | int }}</th>
+            <td>{{ e.Products.product_name }}</td>
+            <td>{{ e.Products.unit_in_stock }}</td>
+            <td>{{ e.Products.unit_price }}</td>
+            <td>{{ e.Suppliers.company_name }}</td>
+            <td>{{ e.Categories.category_name }}</td>
+            <td>
+                <button onclick="window.location.href='/products/{{ user.id }}'" type="button"
+                class="btn btn-info">
+                Edit
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center" id="paginationWrapper">
+    <li class="page-item disabled" id="prevBtnItem">
+        <button class="page-link" id="prevBtn">Previous</button>
+    </li>
+
+        <li class="page-item" id="pageTemplate" href=""><a class="page-link" href="/inventory/products/html?page=1&size=10" data-page="1">1</a></li>
+
+
+    <li class="page-item disabled" id="nextBtnItem">
+        <button class="page-link" id="nextBtn">Next</button>
+    </li>
+</ul>
+</nav>
+
+
+
+{% endblock %}
+
+{% block js_block %}
+<script src="{{url_for('static',path='js/product.js') }}" defer></script>
+{% endblock %}
