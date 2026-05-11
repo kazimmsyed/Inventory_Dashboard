@@ -17,7 +17,8 @@ cd fastapi/Inventory_Management
 python3 -m uvicorn main:app --reload
 ## Image:
 <img width="863" height="200" alt="image" src="https://github.com/user-attachments/assets/a09f8dfb-ecd1-4620-8a94-8f94debff605" />
-### Insert Northwind db records into sqlite
+
+## Insert Northwind db records into sqlite
 sqlite3 inventory_management.db < seed/data.sql
 
 ### Open the Swagger docs to test the endpoints
@@ -29,6 +30,9 @@ URL: http://127.0.0.1:8000/docs#/
 URL: http://127.0.0.1:8000/auth/login
 
 <img width="1440" height="684" alt="image" src="https://github.com/user-attachments/assets/043db040-1f7e-462e-9c77-bb282d12e059" />
+
+<img width="1438" height="772" alt="image" src="https://github.com/user-attachments/assets/b9aaa238-275f-4379-9e59-f2336aacdda9" />
+
 
 ### In order to deactivate the virtual environment
 deactivate
