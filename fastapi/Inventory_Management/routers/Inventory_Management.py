@@ -107,7 +107,7 @@ async def render_products_all(request:Request,db:db_dependency,page: int = 1, si
         return templates.TemplateResponse("products.html",{"request":request,"result_psc":result_psc,"user":user,\
                                                            "helper_fields":helper_fields})
     except Exception as e:
-        return redirect_to_login()
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 
@@ -120,9 +120,10 @@ async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt
             #raise HTTPException(status_code=401, detail="Authentication Failed")
             return redirect_to_login()
         product=db.query(Inventory.Products).filter(Inventory.Products.product_id == product_id).first()
-
+        category = db.query(Inventory.Categories.category_id, Inventory.Categories.category_name).all()
+        supplier = db.query(Inventory.Suppliers.supplier_id, Inventory.Suppliers.company_name).all()
         return templates.TemplateResponse("product_detail.html",\
-                      {"request":request,"product":product,"user":user})
+                      {"request":request,"product":product,"category":category,"supplier":supplier,"user":user})
     except Exception as e:
         redirect_to_login()
 
@@ -232,6 +233,19 @@ async def get_product_by_pricerange(product_name: str,max_price:float, status_co
 #         raise HTTPException(status_code=400, detail=str(e))
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e)) #for generic server errors
+@router.get('/supplier/{id}',status_code=status.HTTP_200_OK)
+async def get_supplier_details(user:user_dependency,db:db_dependency,id: int=Path(gt=0)):
+        result =db.query(Inventory.Suppliers).filter(Inventory.Suppliers.supplier_id == id).first();
+
+        return result
+
+@router.get('/category/{id}',status_code=status.HTTP_200_OK)
+async def get_category_details(user:user_dependency,db:db_dependency,id: int=Path(gt=0)):
+        print("hellllooooooo")
+        return db.query(Inventory.Categories).filter(Inventory.Categories.category_id == id).first();
+
+
+
 
 @router.post("/products/new", status_code=status.HTTP_201_CREATED)
 async def new_product(user:user_dependency,payload:ProductRequest,db:db_dependency):
