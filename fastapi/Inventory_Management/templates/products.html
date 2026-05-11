@@ -17,25 +17,26 @@
     <th>Product</th>
     <th>Units in stock</th>
     <th>Unit price ($)</th>
+    <th>Unit on Order</th>
     <th>Supplier</th>
     <th>Category</th>
-    <th>Button</th>
   </thead>
   <tbody id="productTableBody">
   {% for e in result_psc %}
         <tr class="table-active">
             <th scope="row">{{ loop.index +  (helper_fields.size*(helper_fields.page-1)) | int }}</th>
-            <td>{{ e.Products.product_name }}</td>
+            <td><a href="id/{{ e.Products.product_id }}/html">{{ e.Products.product_name }}</a></td>
             <td>{{ e.Products.unit_in_stock }}</td>
             <td>{{ e.Products.unit_price }}</td>
-            <td>{{ e.Suppliers.company_name }}</td>
-            <td>{{ e.Categories.category_name }}</td>
-            <td>
-                <button onclick="window.location.href='/products/{{ user.id }}'" type="button"
-                class="btn btn-info">
-                Edit
-                </button>
-            </td>
+            <td>{{e.Products.unit_on_order}}</td>
+            <td><a href="/supplier/{{e.Suppliers.supplier_id}}">{{ e.Suppliers.company_name }}</a></td>
+            <td><a href="/category/{{e.Categories.category_id}}">{{ e.Categories.category_name }}</a></td>
+<!--            <td>-->
+<!--                <button onclick="window.location.href='/products/{{ user.id }}'" type="button"-->
+<!--                class="btn btn-info">-->
+<!--                Edit-->
+<!--                </button>-->
+<!--            </td>-->
         </tr>
     {% endfor %}
   </tbody>

@@ -63,7 +63,7 @@ def redirect_to_login():
     return redirect_response
 
 ### Pages ###
-### ENDPOINTS ###
+
 @router.get("/products")
 async def get_products(request:Request,user:user_dependency,db: db_dependency,page: int,size: int):
     try:
@@ -76,6 +76,7 @@ async def get_products(request:Request,user:user_dependency,db: db_dependency,pa
                 "product_name": product.product_name,
                 "units_in_stock": product.unit_in_stock,
                 "unit_price": product.unit_price,
+                "unit_on_order": product.unit_on_order,
                 "supplier_name": supplier.company_name,
                 "category_name": category.category_name,
                 "supplier_id": supplier.supplier_id,
@@ -89,7 +90,7 @@ async def get_products(request:Request,user:user_dependency,db: db_dependency,pa
 
 
 @router.get('/products/html')
-async def render_todo_page(request:Request,db:db_dependency,page: int = 1, size: int = 10):
+async def render_products_all(request:Request,db:db_dependency,page: int = 1, size: int = 10):
     try:
         offset_num = (page - 1) * size
         helper_fields={"page":page,"size":size}
@@ -97,7 +98,7 @@ async def render_todo_page(request:Request,db:db_dependency,page: int = 1, size:
         user=await get_curr_user(request.cookies.get("access_token") )
 
         if user is None:
-            return templates.TemplateResponse("page_not_found.html",{"request":request})
+            return redirect_to_login()
 
         result_psc = await fetch_inventory_data(db,page,size)
         print("result_psc",result_psc)
@@ -106,8 +107,29 @@ async def render_todo_page(request:Request,db:db_dependency,page: int = 1, size:
         return templates.TemplateResponse("products.html",{"request":request,"result_psc":result_psc,"user":user,\
                                                            "helper_fields":helper_fields})
     except Exception as e:
-        return {"message":str(e)}
+        return redirect_to_login()
 
+
+
+
+@router.get("/products/id/{product_id}/html",status_code=status.HTTP_200_OK)
+async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt=0)):
+    try:
+        user = await get_curr_user(request.cookies.get("access_token"))
+        if not user:
+            #raise HTTPException(status_code=401, detail="Authentication Failed")
+            return redirect_to_login()
+        product=db.query(Inventory.Products).filter(Inventory.Products.product_id == product_id).first()
+
+        return templates.TemplateResponse("product_detail.html",\
+                      {"request":request,"product":product,"user":user})
+    except Exception as e:
+        redirect_to_login()
+
+
+
+
+### ENDPOINTS ###
 
 async def fetch_inventory_data(db:Session,page:int,size:int=10):
     page = max(1, page)
@@ -132,6 +154,9 @@ async def fetch_inventory_data(db:Session,page:int,size:int=10):
 #         raise HTTPException(status_code=404, detail="Product not found in Index")
 #     except Exception as e:
 #         raise HTTPException(status_code=404, detail=str(e))
+
+
+
 
 @router.get("/products/id/{product_id}",status_code=status.HTTP_200_OK)
 async def get_product(user:user_dependency, db: db_dependency,product_id: int=Path(gt=0)):

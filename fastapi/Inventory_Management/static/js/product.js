@@ -78,24 +78,26 @@ function updateTable(products,page,page_size) {
     // 1. Clear existing rows
     tbody.innerHTML = "";
 
-    count=10*(page-1);//10*20 for page 3
+    count=page_size*(page-1);//10*20 for page 3
     // 2. Build new rows
     let counter=1
     counter+=count//20+1
     products.data.forEach(item => {
         const row = `
             <tr class="table-active">   
-                <td>${counter}</td>         
-                <td>${item.product_name}</td>
+                <td>${counter}</td>  
+               
+                <td><a href="id/${item.product_id}/html">${item.product_name}</a></td>
                 <td>${item.units_in_stock}</td>
                 <td>${item.unit_price}</td>
-                <td>${item.supplier_name}</td>
-                <td>${item.category_name}</td>
-                <td>
-                <button onclick="window.location.href='/products/{{ user.id }}'" type="button"
-                class="btn btn-info">
-                Edit
-                </button>
+                <td>${item.unit_on_order}</td>
+                <td><a href="/supplier/${item.supplier_id}">${item.supplier_name}</a></td>
+                <td><a href="/category/${item.category_id}">${item.category_name}</a></td>
+<!--                <td>-->
+<!--                <button onclick="window.location.href='/products/{{ user.id }}'" type="button"-->
+<!--                class="btn btn-info">-->
+<!--                Edit-->
+<!--                </button>-->
 
             </tr>
         `;

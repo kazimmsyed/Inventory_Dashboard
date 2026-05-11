@@ -1,0 +1,301 @@
+{% include "partials/layout.html" %}
+{% block style_block %}
+<link type="text/css" rel="stylesheet" href="{{url_for('static',path='/css/login.css') }}" \>
+<style>
+    .draw-border{
+        border:0px solid black;
+    }
+
+body{
+    /*background-color:#1C1F21;*/
+    /*background-image: url("https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");*/
+    /*background-size: contain;*/
+    /*color:white;*/
+
+}
+#grid_detail{
+    display: grid;
+    grid-template-columns:  3fr 2fr;
+    column-gap:2rem;
+    padding:1rem;
+}
+
+#product_detail_sec{
+    border-color: pink;
+}
+#related_list_sec{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height:82vh;
+}
+
+.tb_title{
+    padding-left:1em;
+    padding-bottom:5px;
+    color:white;
+}
+
+.helper_title::before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height: 100%;
+    top:-100%;
+    left:0%;
+    background-color: #212529;
+    border:2px solid white;
+    border-bottom: none;
+    border-left:none;
+    border-radius:2%;
+    z-index:-1;
+}
+
+table{
+    border:2px solid white;
+    border-top:none;
+    border-left:none;
+}
+
+thead th:nth-child(2){
+    white-space: nowrap;
+    color:white;
+    background-color: black;
+}
+
+@media(max-width:900px){
+    #grid_detail{
+    grid-template-columns:2fr 2fr;
+    row-gap:1rem;
+    }
+}
+
+@media(max-width: 600px){
+    #grid_detail{
+    grid-template-columns:1fr;
+    row-gap:1rem;
+    }
+}
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<br>
+    <div id="grid_detail" class="draw-border">
+    <main id="product_detail_sec" class="draw-border">
+        <h3>Product Detail</h3>
+            <form class="row g-3">
+    <div class="col-lg-12">
+    <label for="product_name" class="form-label">Product Name</label>
+    <input type="text" class="form-control is-valid" id="product_name" value="{{ product.product_name }}" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+    </div>
+
+      <div class=" col-lg-6">
+    <label for="supplier_select" class="form-label">Supplier Name</label>
+    <div class="input-group has-validation">
+      <span class="input-group-text" id="inputGroupPrepend3">&#8595</span>
+<!--      <input type="text" class="form-control is-invalid" id="supplier_id" aria-describedby="inputGroupPrepend3 validationServerUsernameFeedback" required>-->
+        <select name="supplier_id" id="supplier_select" class="form-select form-control is-invalid">
+  <option value="" selected disabled>Select a Supplier</option>
+  <option value="18">Aux joyeux ecclésiastiques</option>
+  <option value="16">Bigfoot Breweries</option>
+  <option value="5">Cooperativa de Quesos 'Las Cabras'</option>
+  <option value="27">Escargots Nouveaux</option>
+  <option value="1">Exotic Liquids</option>
+  <option value="14">Formaggi Fortini s.r.l.</option>
+  <option value="29">Forêts d'érables</option>
+  <option value="24">G'day, Mate</option>
+  <option value="28">Gai pâturage</option>
+  <option value="3">Grandma Kelly's Homestead</option>
+  <option value="11">Heli Süßwaren GmbH & Co. KG</option>
+  <option value="23">Karkki Oy</option>
+  <option value="20">Leka Trading</option>
+  <option value="21">Lyngbysild</option>
+  <option value="25">Ma Maison</option>
+  <option value="6">Mayumi's</option>
+  <option value="19">New England Seafood Cannery</option>
+  <option value="2">New Orleans Cajun Delights</option>
+  <option value="13">Nord-Ost-Fisch Handelsgesellschaft mbH</option>
+  <option value="15">Norske Meierier</option>
+  <option value="9">PB Knäckebröd AB</option>
+  <option value="26">Pasta Buttini s.r.l.</option>
+  <option value="7">Pavlova, Ltd.</option>
+  <option value="12">Plutzer Lebensmittelgroßmärkte AG</option>
+  <option value="10">Refrescos Americanas LTDA</option>
+  <option value="8">Specialty Biscuits, Ltd.</option>
+  <option value="17">Svensk Sjöföda AB</option>
+  <option value="4">Tokyo Traders</option>
+  <option value="22">Zaanse Snoepfabriek</option>
+</select>
+      <div id="validationServerSupplierFeedback" class="invalid-feedback">
+        Please choose a Supplier.
+      </div>
+    </div>
+  </div>
+
+    <div class="col-lg-6">
+    <label for="category_id" class="form-label">Category name</label>
+    <div class="input-group has-validation">
+      <span class="input-group-text" id="inputGroupPrepend4">&#8595</span>
+      <select id="category_id" class="form-select form-control is-invalid" aria-describedby="inputGroupPrepend4 validationServerUsernameFeedback" required>
+          <option selected disabled>Select a Category</option>
+          <option value="1">Beverages</option>
+          <option value="2">Condiments</option>
+          <option value="3">Confections</option>
+          <option value="4">Dairy Products</option>
+          <option value="5">Grains/Cereals</option>
+          <option value="6">Meat/Poultry</option>
+          <option value="7">Produce</option>
+          <option value="8">Seafood</option>
+
+    </select>
+<!--      <input type="text" class="form-control is-invalid" id="category_id" aria-describedby="inputGroupPrepend4 validationServerUsernameFeedback" required>-->
+      <div id="validationServerUsernameFeedback" class="invalid-feedback">
+        Please choose a Category.
+      </div>
+    </div>
+  </div>
+
+<hr>
+<h5>Product Pricing</h5>
+    <div class="col-md-6 col-lg-4">
+    <label for="unit_price" class="form-label">Unit Price</label>
+    <input type="text" class="form-control is-valid" id="unit_price" value="{{ product.unit_price }}" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+
+    <div class="col-md-6 col-lg-4">
+    <label for="quantity_per_unit" class="form-label">Quantity per Unit</label>
+    <input type="text" class="form-control is-valid" id="quantity_per_unit" value="{{ product.quantity_per_unit }}" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+<hr>
+<h5>Product Inventory</h5>
+     <div class="col-md-6 col-lg-4">
+    <label for="unit_in_stock" class="form-label">Unit in stock</label>
+    <input type="text" class="form-control is-valid" id="unit_in_stock" value="{{ product.unit_in_stock }}" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+    <div class="col-md-4">
+    <label for="unit_on_order" class="form-label">Unit on Order</label>
+    <input type="text" class="form-control is-valid" id="unit_on_order" value="{{ product.unit_on_order }}" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+    <div class="col-md-4">
+    <label for="unit_on_order" class="form-label">Reorder level</label>
+    <input type="b" class="form-control is-valid" id="reorder_level" value="{{ product.reorder_level }}" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+<!--    <div class="col-md-4">-->
+<!--    <label for="unit_on_order" class="form-label">Discontinued</label>-->
+<!--    <input type="text" class="form-control is-valid" id="discontinued" value="Otto" required>-->
+<!--    <div class="valid-feedback">-->
+<!--      Looks good!-->
+<!--    </div>-->
+<!--  </div>-->
+
+
+  <div class="col-12">
+    <div class="form-check">
+      <input class="form-check-input is-invalid" type="checkbox" value="" id="invalidCheck3" aria-describedby="invalidCheck3Feedback" required>
+      <label class="form-check-label" for="invalidCheck3">
+        Agree to terms and conditions
+      </label>
+      <div id="invalidCheck3Feedback" class="invalid-feedback">
+        You must agree before submitting.
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Submit form</button>
+  </div>
+</form>
+
+    </main>
+
+    <aside id="related_list_sec" class="draw-border">
+        <section id="category_sec">
+            <h3>Related List</h3>
+            <br>
+            <div class="tb_title"><b>Category</b></div>
+            <table class="table table-striped">
+                <thead>
+                     <tr>
+                         <th class="helper_title" style="position: relative">/</th>
+                         <th>Category Information</th>
+                     </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="supplier_sec">
+            <div class="tb_title"><b>Supplier</b></div>
+            <table class="table table-striped">
+                <thead>
+                     <tr>
+                         <th class="helper_title" style="position: relative">/</th>
+                         <th>Supplier Information</th>
+                     </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>Company</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>Contact</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>Country</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>City</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>region</th>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </aside>
+    </div>
+{% endblock %}
+{% block js_block %}
+<script src="{{url_for('static',path='js/product.js') }}" defer></script>
+<script>
+
+</script>
+{% endblock %}
