@@ -4,7 +4,7 @@ supplier_select=document.getElementById('supplier_select');
 category_select=document.getElementById('category_select');
 supplier_body=document.getElementById('supplier_body');
 category_body=document.getElementById('category_body')
-
+flag=true;
 
 async function fetchRecords(url) {
     try {
@@ -39,37 +39,9 @@ async function fetchRecords(url) {
 
 
 
-const timeOut=async ()=>{
-    let res=setTimeout(()=> "wait for 500ms",500);
-    return res
-}
 
-
-// let debounceTimer
-// supplier_select.addEventListener("change", () => {
-//     // 1. Clear the previous timer immediately
-//     clearTimeout(debounceTimer);
-//
-//     // 2. Start a new timer
-//     debounceTimer = setTimeout(async () => {
-//         console.log("User stopped changing for 500ms. Fetching...");
-//         id=document.getElementById('supplier_select').value;
-//         try {
-//             const data = await fetchRecords(url=`/inventory/supplier/${id}`);
-//             console.log("Records received:", data);
-//             op=data;
-//             updateTable(supplier_body,data)
-//
-//         } catch (err) {
-//             console.error("Fetch failed:", err);
-//         }
-//
-//     }, 500); // The delay
-// });
-
-
-
-
+//I want to return a promise instead of TimeOut since
+// it immediatly gets resolved.
 let debounceTimer;
 const callDebouncer=async (url)=>{
     // 1. Clear the previous timer immediately
@@ -98,6 +70,7 @@ const callDebouncer=async (url)=>{
 supplier_select.addEventListener("change",async ()=>{
     id=supplier_select.value;
     url=`/inventory/supplier/${id}`;
+    console.log("url",url)
     try {
         data =await callDebouncer(url);
         updateTable(supplier_body, data)
@@ -107,14 +80,22 @@ supplier_select.addEventListener("change",async ()=>{
         console.log(e)
     }
 });
-
+var op=
 category_select.addEventListener("change",async ()=>{
     id=category_select.value;
+    ans=supplier_select.value;//Used only one once.
+
     url=`/inventory/category/${id}`;
     try {
         data =await callDebouncer(url);
         console.log("data_k",data);
-        updateTableCategory(category_body, data)
+        op=data
+        updateTableCategory(category_body, data.res)
+        updateSupplierSelect(supplier_select,op.data[0])
+        if(flag){ //Run only once during setup.
+        supplier_select.value=ans;
+        flag=false;
+        }
     }
     catch (e){
         console.log(e)
@@ -136,6 +117,18 @@ function updateTableCategory(tbody,data){
             </tr>
     `
     tbody.innerHTML=row;
+
+}
+
+function updateSupplierSelect(select_stmt,data){
+    supplier_select.innerHTML="";
+
+    const optionsHTML = data.map(supplier => {
+    return `<option value="${supplier.supplier_id}">${supplier.supplier_name}</option>`;
+}).join('');
+    supplier_select.innerHTML=optionsHTML;
+
+
 
 }
 

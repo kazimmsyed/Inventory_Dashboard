@@ -125,7 +125,7 @@ async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt
         return templates.TemplateResponse("product_detail.html",\
                       {"request":request,"product":product,"category":category,"supplier":supplier,"user":user})
     except Exception as e:
-        redirect_to_login()
+        return redirect_to_login()
 
 
 
@@ -235,14 +235,26 @@ async def get_product_by_pricerange(product_name: str,max_price:float, status_co
 #         raise HTTPException(status_code=500, detail=str(e)) #for generic server errors
 @router.get('/supplier/{id}',status_code=status.HTTP_200_OK)
 async def get_supplier_details(user:user_dependency,db:db_dependency,id: int=Path(gt=0)):
-        result =db.query(Inventory.Suppliers).filter(Inventory.Suppliers.supplier_id == id).first();
+        supplier_info =db.query(Inventory.Suppliers).filter(Inventory.Suppliers.supplier_id == id).first();
 
-        return result
+        return supplier_info;
 
-@router.get('/category/{id}',status_code=status.HTTP_200_OK)
-async def get_category_details(user:user_dependency,db:db_dependency,id: int=Path(gt=0)):
+@router.get('/category/{category_id}',status_code=status.HTTP_200_OK)
+async def get_category_details(user:user_dependency,db:db_dependency,category_id: int=Path(gt=0)):
         print("hellllooooooo")
-        return db.query(Inventory.Categories).filter(Inventory.Categories.category_id == id).first();
+        res= db.query(Inventory.Categories).filter(Inventory.Categories.category_id == category_id).first();
+        print(res)
+        dependent_list = db.query(Inventory.Suppliers.company_name, Inventory.Suppliers.supplier_id) \
+            .select_from(Inventory.Products) \
+            .filter(Inventory.Products.category_id == category_id) \
+            .join(Inventory.Suppliers, Inventory.Suppliers.supplier_id == Inventory.Products.supplier_id) \
+            .distinct().all()
+
+        formatted_data = []
+
+        formatted_data.append({"supplier_name": k, "supplier_id": v} for k, v in dependent_list)
+        result={"res":res,"data":formatted_data}
+        return result
 
 
 
@@ -359,6 +371,7 @@ def _validate_FK(db:db_dependency,category_id,supplier_id=None,product_id=None):
     if(supplier_id is not None):
         supplier_id = get_suppliers(supplier_id, db).supplier_id if supplier_id else None
     return category_id, supplier_id,product_id
+
 
 
 

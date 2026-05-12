@@ -113,6 +113,7 @@ thead th:nth-child(2){
                 required
         >
             {% for supplier_id,company_name in supplier %}
+
             <option
 
              {% if supplier_id |int == product.supplier_id|int %}
