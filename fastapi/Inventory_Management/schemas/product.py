@@ -11,8 +11,8 @@ class ProductRequest(BaseModel):
     product_name: str = Field(min_length=5, max_length=50) #mandatory
     supplier_id: Optional[int] = None
     unit_price: float = Field(gt=0)#price > 0
-    units_in_stock: int = Field(ge=0)
-    units_on_order: Optional[int] = Field(default=0,ge=0)
+    unit_in_stock: int = Field(ge=0)
+    unit_on_order: Optional[int] = Field(default=0,ge=0)
     reorder_level: Optional[int] = Field(default=0,ge=0)
     discontinued: Optional[int] = Field(default=0) #mandatory
     category_id: Optional[int] = None
@@ -23,7 +23,7 @@ class ProductRequest(BaseModel):
             "example":{
                 "product_name":"SuperDry",
                 "unit_price":1.0,
-                "units_in_stock":1,
+                "unit_in_stock":1,
             }
         }
     }
@@ -51,6 +51,9 @@ class ProductBuilder:
         self.product.unit_in_stock = units
         return self
 
+    def set_reorder_level(self,reorder_level: int):
+        self.product.reorder_level = reorder_level
+        return self
     def set_category_id(self,category_id:Optional[int]):
         if category_id!=None:
             self.product.category_id = category_id
@@ -70,8 +73,12 @@ class ProductBuilder:
         self.product.discontinued = discontinued
         return self
 
+    def set_unit_on_order(self, unit_on_order: int):
+        self.product.unit_on_order = unit_on_order
+        return self
+
     def set_stock(self, stock: int):
-        self.product.units_in_stock = stock
+        self.product.unit_in_stock = stock
         return self
 
     def set_owner_id(self, user_id: int=None):

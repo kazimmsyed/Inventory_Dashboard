@@ -1,5 +1,6 @@
 console.log("product_detail conn");
 
+
 supplier_select=document.getElementById('supplier_select');
 category_select=document.getElementById('category_select');
 supplier_body=document.getElementById('supplier_body');
@@ -111,6 +112,9 @@ category_select.addEventListener("change",async ()=>{
         supplier_select.value=ans;
         flag=false;
         }
+        supplier_select.dispatchEvent(new Event('change'));
+
+
     }
     catch (e){
         console.log(e)

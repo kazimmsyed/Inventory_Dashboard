@@ -86,8 +86,8 @@ thead th:nth-child(2){
 <br>
     <div id="grid_detail" class="draw-border">
     <main id="product_detail_sec" class="draw-border">
-        <h3>Product Detail</h3>
-            <form id='product_form' class="row g-3">
+        <h3 >Product Detail</h3>
+            <form id='product_form' data-id='{{ product.product_id }}'class="row g-3">
     <div class="col-lg-12">
     <label for="product_name" class="form-label">Product Name</label>
     <input type="text" class="form-control is-valid" id="product_name" name="product_name"
@@ -176,10 +176,14 @@ thead th:nth-child(2){
     </div>
   </div>
 <hr>
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container top-0 end-0 p-3"></div>
+</div>
 <h5>Product Inventory</h5>
+
      <div class="col-md-6 col-lg-4">
     <label for="unit_in_stock" class="form-label">Unit in stock</label>
-    <input type="text" class="form-control is-valid" id="unit_in_stock" name="units_in_stock" value="{{ product.unit_in_stock }}" required
+    <input type="text" class="form-control is-valid" id="unit_in_stock" name="unit_in_stock" value="{{ product.unit_in_stock }}" required
     {% if  product.owner_id is not none and product.owner_id!=user.id %}
             disabled
             {% endif %}
@@ -232,11 +236,9 @@ thead th:nth-child(2){
     </div>
   </div>
   <div class="col-12">
-    <button class="btn btn-primary" type="submit">Submit form</button>
+    <button class="btn btn-primary" type="submit" data-id="{{ product.product_id }}">Submit form</button>
   </div>
-<div aria-live="polite" aria-atomic="true" class="position-relative">
-    <div class="toast-container top-0 end-0 p-3"></div>
-</div>
+
 
 </form>
 
