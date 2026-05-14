@@ -6,33 +6,48 @@ supplier_body=document.getElementById('supplier_body');
 category_body=document.getElementById('category_body')
 flag=true;
 
-async function fetchRecords(url) {
+async function fetchRecords(url,method_name='GET',payload) {
     try {
         // Helper to get cookie
         const token = document.cookie.split('; ')
             .find(row => row.startsWith('access_token='))
             ?.split('=')[1];
 
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        methods=['GET','POST','DELETE','PUT','PATCH']
+
+
+        let requestOptions = {
+        method: method_name,
+        headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+        }
+        };
+
+    //Use the literal string 'body' as the key
+        if (payload && method_name !== 'GET') {
+        requestOptions.body = JSON.stringify(payload);
+         }
+
+        const response = await fetch(url,requestOptions
+        );
 
         if (response.ok) {
             const data = await response.json();
             console.log("Data received:", data);
-            return data
+            return {"message":"success","response":data}
             //Add your code here
             //updateTable();
 
         } else {
             console.error("Fetch failed", response.status);
+        // throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+            return {"message":"failure","response":response.status}
+
         }
     } catch (error) {
         console.error("Network error:", error);
+        return {"message":"failure","response":response.status}
     }
 }
 
@@ -55,7 +70,7 @@ const callDebouncer=async (url)=>{
         try {
             const data = await fetchRecords(url);
             console.log("Records received:", data);
-            resolve(data);
+            resolve(data.response);
 
         } catch (err) {
             console.error("Fetch failed:", err);

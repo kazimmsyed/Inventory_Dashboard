@@ -121,11 +121,19 @@ async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt
             return redirect_to_login()
         product=db.query(Inventory.Products).filter(Inventory.Products.product_id == product_id).first()
         category = db.query(Inventory.Categories.category_id, Inventory.Categories.category_name).all()
-        supplier = db.query(Inventory.Suppliers.supplier_id, Inventory.Suppliers.company_name).all()
+        supplier = (db.query(Inventory.Suppliers.supplier_id, Inventory.Suppliers.company_name)\
+                    .join(Inventory.Products,Inventory.Products.supplier_id == Inventory.Suppliers.supplier_id)\
+                    .filter(Inventory.Products.product_id == product_id)\
+                    .first())
+        print("supplier",supplier)
+
+
+
         return templates.TemplateResponse("product_detail.html",\
                       {"request":request,"product":product,"category":category,"supplier":supplier,"user":user})
     except Exception as e:
-        return redirect_to_login()
+        return {"message":str(e)}
+        # return redirect_to_login()
 
 
 
