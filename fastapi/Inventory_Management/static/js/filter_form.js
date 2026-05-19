@@ -1,6 +1,7 @@
 console.log("filter form connected");
+import {fetchRecords} from "./utils/fetchRequest.js";
 
-filter_form=document.getElementById('filter_form');
+const filter_form=document.getElementById('filter_form');
 
 
 const filter_func=  (e)=>{
@@ -23,9 +24,12 @@ const filter_func=  (e)=>{
     return { filters };
 }
 
+var op
 filter_form.addEventListener('submit',async(e)=>{
    e.preventDefault();
-   payload=filter_func(e);
-
-
+   let payload=filter_func(e);
+   let url='filter'
+    console.log(payload);
+    op=await fetchRecords(url,"POST",payload);
 });
+

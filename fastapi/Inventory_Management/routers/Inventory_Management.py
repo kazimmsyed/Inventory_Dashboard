@@ -142,7 +142,8 @@ async def render_products_all(request:Request,db:db_dependency,page: int = 1, si
         #raise HTTPException(status_code=404, detail=str(e))
 
 
-
+#post because we are doing a get but we
+# Sending the data in payload.
 @router.post("/products/filter")
 async def filter_products(
     payload: FilterRequest,
@@ -180,9 +181,9 @@ async def filter_products(
 
     #Query has been build.
 
-    result = await db.execute(query)
+    result =  db.execute(query)
 
-    products = result.scalars().all()
+    products = result.scalars().all()# scalar gives count and scalars() gives records
 
     return {
         "count": len(products),

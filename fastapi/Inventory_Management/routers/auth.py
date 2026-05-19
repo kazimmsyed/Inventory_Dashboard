@@ -110,7 +110,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     user = authenticate_user(db,form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
-    token=create_access_token(user.username, user.user_id,timedelta(minutes=60))
+    token=create_access_token(user.username, user.user_id,timedelta(minutes=180))
     return {'access_token':token,'token_type':'bearer'}
 
 @router.get("/user/{username}",status_code=status.HTTP_200_OK)

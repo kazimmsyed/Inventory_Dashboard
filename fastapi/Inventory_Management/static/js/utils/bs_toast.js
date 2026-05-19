@@ -33,3 +33,7 @@ function showToast(message, type = 'success',parent) {
         toastElement.remove();
     });
 }
+
+export {
+    showToast
+}

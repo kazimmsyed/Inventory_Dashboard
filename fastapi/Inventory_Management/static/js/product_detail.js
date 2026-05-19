@@ -1,56 +1,13 @@
 console.log("product_detail conn");
+import {fetchRecords} from "./utils/fetchRequest.js";
+
+const supplier_select=document.getElementById('supplier_select');
+const category_select=document.getElementById('category_select');
+const supplier_body=document.getElementById('supplier_body');
+const category_body=document.getElementById('category_body')
+let flag=true;
 
 
-supplier_select=document.getElementById('supplier_select');
-category_select=document.getElementById('category_select');
-supplier_body=document.getElementById('supplier_body');
-category_body=document.getElementById('category_body')
-flag=true;
-
-async function fetchRecords(url,method_name='GET',payload) {
-    try {
-        // Helper to get cookie
-        const token = document.cookie.split('; ')
-            .find(row => row.startsWith('access_token='))
-            ?.split('=')[1];
-
-        methods=['GET','POST','DELETE','PUT','PATCH']
-
-
-        let requestOptions = {
-        method: method_name,
-        headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-        }
-        };
-
-    //Use the literal string 'body' as the key
-        if (payload && method_name !== 'GET') {
-        requestOptions.body = JSON.stringify(payload);
-         }
-
-        const response = await fetch(url,requestOptions
-        );
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Data received:", data);
-            return {"message":"success","response":data}
-            //Add your code here
-            //updateTable();
-
-        } else {
-            console.error("Fetch failed", response.status);
-        // throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
-            return {"message":"failure","response":response.status}
-
-        }
-    } catch (error) {
-        console.error("Network error:", error);
-        return {"message":"failure","response":response.status}
-    }
-}
 
 
 
@@ -84,11 +41,11 @@ const callDebouncer=async (url)=>{
 
 
 supplier_select.addEventListener("change",async ()=>{
-    id=supplier_select.value;
-    url=`/inventory/supplier/${id}`;
+    let id=supplier_select.value;
+    let url=`/inventory/supplier/${id}`;
     console.log("url",url)
     try {
-        data =await callDebouncer(url);
+        const data =await callDebouncer(url);
         updateTable(supplier_body, data)
 
     }
@@ -98,14 +55,14 @@ supplier_select.addEventListener("change",async ()=>{
 });
 
 category_select.addEventListener("change",async ()=>{
-    id=category_select.value;
-    ans=supplier_select.value;//Used only one once.
+    let id=category_select.value;
+    let ans=supplier_select.value;//Used only one once.
 
-    url=`/inventory/category/${id}`;
+    let url=`/inventory/category/${id}`;
     try {
-        data =await callDebouncer(url);
+        let data =await callDebouncer(url);
         console.log("data_k",data);
-        op=data
+        let op=data
         updateTableCategory(category_body, data.res)
         updateSupplierSelect(supplier_select,op.data[0])
         if(flag){ //Run only once during setup.

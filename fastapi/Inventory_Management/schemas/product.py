@@ -35,7 +35,7 @@ class ProductBuilder:
 
     def __init__(self, existing_product: Products=None,FilterStrategy=None):
         self.product = existing_product or Products()
-        self.FilterStrategy = FilterStrategy or FilterStrategy()
+        # self.FilterStrategy = FilterStrategy or FilterStrategy()
 
     def __str__(self):
         return f"{self.product.product_name} @ {self.product.unit_price}"

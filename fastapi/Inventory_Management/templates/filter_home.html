@@ -154,7 +154,7 @@
             id="unit_price_field"
             name="field"
             value="unit_price"
-            readonly
+
         >
     </div>
 
@@ -210,7 +210,7 @@
 {% endblock %}
 
 {% block js_block %}
-<script src="{{url_for('static',path='js/filter_form.js') }}" defer></script>
+<script type="module" src="{{url_for('static',path='js/filter_form.js') }}" defer></script>
 <script src="{{url_for('static',path='js/product.js') }}" defer></script>
 
 {% endblock %}

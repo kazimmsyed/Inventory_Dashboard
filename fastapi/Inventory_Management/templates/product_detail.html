@@ -11,7 +11,6 @@ body{
     /*background-image: url("https://images.unsplash.com/photo-1629196914168-3a2652305f9f?q=80&w=1006&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");*/
     /*background-size: contain;*/
     /*color:white;*/
-
 }
 
 #grid_detail{
@@ -311,8 +310,9 @@ thead th:nth-child(2){
     </div>
 {% endblock %}
 {% block js_block %}
-<script src="{{url_for('static',path='js/product_detail.js') }}" defer></script>
-<script src="{{url_for('static',path='js/product_detail_submit.js') }}" defer></script>
+<!-- I have two entry files -->
+<script type="module" src="{{url_for('static',path='js/product_detail.js') }}" defer></script>
+<script type="module" src="{{url_for('static',path='js/product_detail_submit.js') }}" defer></script>
 <script>
 
 </script>

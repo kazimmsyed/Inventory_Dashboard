@@ -25,9 +25,16 @@ class FilterRequest(BaseModel):
             "example":{
                    "filters": [{
                         "field": "product_name",
-                        "operator": "eq",
-                        "value": "Tofu",
-                   }]
+                        "operator": "contains",
+                        "value": "T",
+                   },
+                       {
+                          "field": "unit_price",
+                           "operator": "gt",
+                           "value": 20
+                       }
+
+                   ]
             }
         }
     }
@@ -146,5 +153,7 @@ STRATEGIES: dict[str, FilterStrategy] = {
 ALLOWED_FIELDS = {
     "product_name": Products.product_name,
     "unit_price": Products.unit_price,
+    "unit_in_stock": Products.unit_in_stock
+    
 }
 
