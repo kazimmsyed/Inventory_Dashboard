@@ -96,7 +96,7 @@ supplier_select.addEventListener("change",async ()=>{
         console.log(e)
     }
 });
-var op=
+
 category_select.addEventListener("change",async ()=>{
     id=category_select.value;
     ans=supplier_select.value;//Used only one once.

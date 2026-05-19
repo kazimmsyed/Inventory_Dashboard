@@ -3,7 +3,7 @@ import random
 from typing import Optional
 from pydantic import BaseModel, Field
 from models.Inventory import Products  # Import your actual SQLAlchemy model
-
+from schemas.filter_strategy import FilterStrategy
 
 #API GATEWAY VALIDATION
 class ProductRequest(BaseModel):
@@ -33,8 +33,9 @@ class ProductRequest(BaseModel):
 
 class ProductBuilder:
 
-    def __init__(self, existing_product: Products=None):
+    def __init__(self, existing_product: Products=None,FilterStrategy=None):
         self.product = existing_product or Products()
+        self.FilterStrategy = FilterStrategy or FilterStrategy()
 
     def __str__(self):
         return f"{self.product.product_name} @ {self.product.unit_price}"

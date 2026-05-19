@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import result
 from starlette import status
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from sqlalchemy import func
+from sqlalchemy import func,select
 
 #Local imports
 from models import Inventory
@@ -18,6 +18,7 @@ from models.Inventory import Products
 from seed.dummy import PRODUCTS
 from schemas.product import ProductBuilder
 from schemas.product import ProductRequest
+from schemas.filter_strategy import FilterRequest,STRATEGIES,ALLOWED_FIELDS
 from routers.auth import get_curr_user
 from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -49,6 +50,11 @@ we inject the sql conn. This make them loosely coupled. We can even
 have mock database to test things. 
 Essence: Don't call us, we will call you.
 """
+
+
+
+
+
 
 
 # @router.get("/products")
@@ -112,6 +118,79 @@ async def render_products_all(request:Request,db:db_dependency,page: int = 1, si
 
 
 
+@router.get('/products/home')
+async def render_products_all(request:Request,db:db_dependency,page: int = 1, size: int = 10):
+    try:
+        offset_num = (page - 1) * size
+        helper_fields={"page":page,"size":size}
+
+        user=await get_curr_user(request.cookies.get("access_token") )
+
+        if user is None:
+            return redirect_to_login()
+
+        result_psc = await fetch_inventory_data(db,page,size)
+        print("result_psc",result_psc)
+        total = db.query(func.count(Inventory.Products.product_id)).scalar()
+        helper_fields["total_pages"] = total/size
+        return templates.TemplateResponse("filter_home.html",{"request":request,"result_psc":result_psc,"user":user,\
+                                                           "helper_fields":helper_fields})
+    except Exception as e:
+        print(str(e))
+        print("------- from products/home")
+        redirect_to_login()
+        #raise HTTPException(status_code=404, detail=str(e))
+
+
+
+@router.post("/products/filter")
+async def filter_products(
+    payload: FilterRequest,
+    db: db_dependency
+):
+    print(payload)
+    query = select(Inventory.Products)
+
+    for filter_item in payload.filters:
+
+        # Validate field
+        if filter_item.field not in ALLOWED_FIELDS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid field: {filter_item.field}"
+            )
+
+        # Validate operator
+        if filter_item.operator not in STRATEGIES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid operator: {filter_item.operator}"
+            )
+
+        column = ALLOWED_FIELDS[filter_item.field]
+
+        strategy = STRATEGIES[filter_item.operator]
+
+        query = strategy.apply(
+            query=query,
+            column=column,
+            value=filter_item.value
+        )
+
+
+    #Query has been build.
+
+    result = await db.execute(query)
+
+    products = result.scalars().all()
+
+    return {
+        "count": len(products),
+        "results": products
+    }
+
+
+
 @router.get("/products/id/{product_id}/html",status_code=status.HTTP_200_OK)
 async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt=0)):
     try:
@@ -132,8 +211,8 @@ async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt
         return templates.TemplateResponse("product_detail.html",\
                       {"request":request,"product":product,"category":category,"supplier":supplier,"user":user})
     except Exception as e:
-        return {"message":str(e)}
-        # return redirect_to_login()
+        # return {"message":str(e)}
+        return redirect_to_login()
 
 
 
@@ -402,17 +481,20 @@ async def delete_product(user:user_dependency,db:db_dependency,product_id: int =
 
     deleted_product=db.query(Inventory.Products).filter(Inventory.Products.product_id == product_id).first()
     if not deleted_product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        return {"message": "failure", "response":"Product not found"}
+        # raise HTTPException(status_code=404, detail="Product not found");
+
 
     if (deleted_product.owner_id is not None and deleted_product.owner_id != user["id"]):
         #403 is for found resource but u can't update it.
         owner_username=db.query(Inventory.User).filter(Inventory.User.user_id == deleted_product.owner_id).first().username
-        raise HTTPException(status_code=403, detail=f"Product can only be updated by {owner_username}")
+        return {"message": "failure", "response": f" Product can only be updated by {owner_username}"}
+        # raise HTTPException(status_code=403, detail=f"Product can only be updated by {owner_username}")
 
     product_name=deleted_product.product_name
     db.delete(deleted_product)
     db.commit()
-    return {"message":f" Successfully deleted product {product_name} "}
+    return {"message":"success","response":f" Successfully deleted product {product_name} "}
 
 
 

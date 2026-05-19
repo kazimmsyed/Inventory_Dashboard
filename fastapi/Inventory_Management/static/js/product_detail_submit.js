@@ -4,11 +4,10 @@ console.log("product detail on put/post");
 
 
 
-var op;
 document.getElementById('product_form').addEventListener('submit',async(e)=>{
     e.preventDefault();
     form=e.target;
-    form.getElementsByTagName('button');
+    // form.getElementsByTagName('button');
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     data.reorder_level=parseInt(data.reorder_level);
