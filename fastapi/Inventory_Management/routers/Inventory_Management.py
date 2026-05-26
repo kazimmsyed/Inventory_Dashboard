@@ -71,7 +71,8 @@ def redirect_to_login():
 ### Pages ###
 
 @router.get("/products")
-async def get_products(request:Request,user:user_dependency,db: db_dependency,page: int,size: int):
+async def get_products(request:Request,db: db_dependency,page: int,size: int):
+    #user: user_dependency
     try:
         result_psc = await fetch_inventory_data(db,page,size);
         # 2. Manually format into a list of dicts for JSON serialization
@@ -142,6 +143,61 @@ async def render_products_all(request:Request,db:db_dependency,page: int = 1, si
         #raise HTTPException(status_code=404, detail=str(e))
 
 
+@router.get('/categories')
+async def getCategories(
+        db:db_dependency
+    ):
+    try:
+        rows=(db.query(
+            Inventory.Categories.category_id,
+            Inventory.Categories.category_name,
+            Inventory.Categories.description
+            )
+            .all()
+              )
+        data=[{"category_id":e.category_id,"category_name":e.category_name,"description":e.description} for e in rows]
+        return data
+
+    except Exception as e:
+        raise HTTPException(status_code=400,detail=str(e))
+
+
+@router.get('/category/{category_id}/products')
+async def getProductBasedOnCategory(
+    db:db_dependency,
+    category_id: int = Path(gt=0),
+    page: int =1 ,
+    size: int = 10):
+
+    try:
+        offset_num = (page - 1) * size
+        helper_fields = {"page": page, "size": size}
+        row=(db.query(
+                    Inventory.Products.product_name,
+                    Inventory.Products.product_id
+                    )
+                    .filter(Inventory.Products.category_id == category_id)
+                    .offset(offset_num)
+                    .limit(size)
+                    .all()
+        )
+        result= [ {"product_name": row.product_name, "product_id": row.product_id} for row in row]
+        total = (
+            db.query(func.count(Inventory.Products.product_id))
+            .filter(Inventory.Products.category_id == category_id)
+            .scalar()
+        )
+        helper_fields["records_count"] = total;
+        helper_fields["total_pages"] = max(1, (total + size - 1) // size)
+        return {
+            "helper_fields": helper_fields,
+            "data": result,  # same shape as /products if you want consistency
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 #post because we are doing a get but we
 # Sending the data in payload.
 @router.post("/products/filter")
@@ -189,6 +245,8 @@ async def filter_products(
         "count": len(products),
         "results": products
     }
+
+
 
 
 
@@ -341,7 +399,7 @@ async def get_category_details(user:user_dependency,db:db_dependency,category_id
         formatted_data = []
 
         formatted_data.append({"supplier_name": k, "supplier_id": v} for k, v in dependent_list)
-        result={"res":res,"data":formatted_data}
+        result={"res":res,"data":formatted_data} #JSON Serialization
         return result
 
 
