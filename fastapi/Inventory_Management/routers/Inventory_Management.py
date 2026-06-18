@@ -162,6 +162,38 @@ async def getCategories(
         raise HTTPException(status_code=400,detail=str(e))
 
 
+@router.get('/products/{id}')
+async def getProductDetails(
+        db:db_dependency,
+        id : int=Path(gt=0)
+):
+    e= db.query(Inventory.Products).filter(Inventory.Products.product_id == id).first()
+    print(e)
+    if(e is None):
+        return {"message":"Product not found"}
+    result= {"product_name":e.product_name,
+              "category_id": e.category_id,
+              "product_id": e.product_id,
+              "unit_price": e.unit_price,
+              "unit_on_order": e.unit_on_order,
+              "discontinued": e.discontinued,
+              "owner_id": e.owner_id,
+              "quantity_per_unit": e.quantity_per_unit,
+              "supplier_id": e.supplier_id,
+              "unit_in_stock": e.unit_in_stock,
+              "reorder_level": e.reorder_level
+              }
+
+    print("result",result);
+    return result;
+
+
+
+
+
+
+
+
 @router.get('/category/{category_id}/products')
 async def getProductBasedOnCategory(
     db:db_dependency,
@@ -553,7 +585,7 @@ async def delete_product(user:user_dependency,db:db_dependency,product_id: int =
     product_name=deleted_product.product_name
     db.delete(deleted_product)
     db.commit()
-    return {"message":"success","response":f" Successfully deleted product {product_name} "}
+    return {"message":"success","status":200,"response":f" Successfully deleted product {product_name} "}
 
 
 

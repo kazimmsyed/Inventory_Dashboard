@@ -16,7 +16,6 @@ async function fetchRecords(url,method_name='GET',payload) {
         }
         };
 
-    //Use the literal string 'body' as the key
         if (payload && method_name !== 'GET') {
         requestOptions.body = JSON.stringify(payload);
          }
@@ -27,19 +26,15 @@ async function fetchRecords(url,method_name='GET',payload) {
         if (response.ok) {
             const data = await response.json();
             console.log("Data received:", data);
-            return {"message":"success","response":data}
-            //Add your code here
-            //updateTable();
-
-        } else {
-            console.error("Fetch failed", response.status);
-        // throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
-            return {"message":"failure","response":response.status}
-
+            return {"message":"success","status":response.status,"response":data}
+        }
+        else{
+          const errorText = await response.text();
+          throw new Error(`HTTP Error ${response.status}: ${errorText || response.statusText}`);
         }
     } catch (error) {
         console.error("Network error:", error);
-        return {"message":"failure","response":response.status}
+        return {"message":"failure","status":response.status,"response":response.status}
     }
 }
 
