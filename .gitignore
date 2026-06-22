@@ -12,6 +12,11 @@ fastapi/Inventory_Management/inventory_management.db
 
 
 
+backend/Inventory_Management/inventory_management.db
+backend/Inventory_Management/static/css_k/
+backend/Inventory_Management/static/js_k/
+
+
 
 
 
