@@ -28,7 +28,7 @@ templates=Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 def test(request:Request):
-    return templates.TemplateResponse("home.html",{"request":request})
+    return templates.TemplateResponse(request, "home.html")
 
 # def get_db():
 #     db = SessionLocal()
