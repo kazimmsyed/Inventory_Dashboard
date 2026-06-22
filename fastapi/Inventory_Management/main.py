@@ -33,6 +33,6 @@ app.add_middleware(
 
 @app.get("/")
 def test(request:Request):
-    return templates.TemplateResponse("home.html",{"request":request})
+    return templates.TemplateResponse(request, "home.html")
 
 

@@ -46,11 +46,11 @@ templates=Jinja2Templates(directory="templates")
 
 @router.get("/login")
 def render_login_page(request:Request):
-    return templates.TemplateResponse("login.html",{"request":request})
+    return templates.TemplateResponse(request, "login.html")
 
 @router.get("/register")
 def render_login_page(request:Request):
-    return templates.TemplateResponse("register.html",{"request":request})
+    return templates.TemplateResponse(request, "register.html")
 
 
 ###Endpoints###

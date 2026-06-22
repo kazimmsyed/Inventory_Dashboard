@@ -111,8 +111,8 @@ async def render_products_all(request:Request,db:db_dependency,page: int = 1, si
         print("result_psc",result_psc)
         total = db.query(func.count(Inventory.Products.product_id)).scalar()
         helper_fields["total_pages"] = total/size
-        return templates.TemplateResponse("products.html",{"request":request,"result_psc":result_psc,"user":user,\
-                                                           "helper_fields":helper_fields})
+        return templates.TemplateResponse(request, "products.html", {"result_psc": result_psc, "user": user,
+                                                                     "helper_fields": helper_fields})
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -299,8 +299,8 @@ async def get_product(request:Request, db: db_dependency,product_id: int=Path(gt
 
 
 
-        return templates.TemplateResponse("product_detail.html",\
-                      {"request":request,"product":product,"category":category,"supplier":supplier,"user":user})
+        return templates.TemplateResponse(request, "product_detail.html",
+                                          {"product": product, "category": category, "supplier": supplier, "user": user})
     except Exception as e:
         # return {"message":str(e)}
         return redirect_to_login()
